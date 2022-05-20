@@ -182,11 +182,11 @@ export async function buildTransfer(options: TransferOptionsArray) {
   return tx;
 }
 
-export function toMessages(tx: helpers.TransactionSkeletonType) {
+export function toMessages(tx: helpers.TransactionSkeletonType, inputIndex: number) {
   const hasher = new utils.CKBHasher();
 
   // locks you want to sign
-  const signLock = tx.inputs.get(0)?.cell_output.lock!;
+  const signLock = tx.inputs.get(inputIndex - 1)?.cell_output.lock!;
 
   const messageGroup = commons.createP2PKHMessageGroup(tx, [signLock], {
     hasher: {
@@ -200,7 +200,7 @@ export function toMessages(tx: helpers.TransactionSkeletonType) {
 
 
 export async function signByPrivateKey(txSkeleton: helpers.TransactionSkeletonType, privateKey: string, addressIndex: number) {
-  const messages = toMessages(txSkeleton)
+  const messages = toMessages(txSkeleton, addressIndex)
 
   const signature = hd.key.signRecoverable(messages.message, privateKey);
 
