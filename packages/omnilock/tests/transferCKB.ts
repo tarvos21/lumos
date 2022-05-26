@@ -1,6 +1,20 @@
-import { PrivateKeySigner, Secp256k1Blake160SignableScript } from "../src/index";
-import { HexString, helpers, core, toolkit, config, BI, hd, RPC, Indexer, Cell } from "@ckb-lumos/lumos";
-import pTimeout from 'p-timeout';
+import {
+  PrivateKeySigner,
+  Secp256k1Blake160SignableScript,
+} from "../src/index";
+import {
+  HexString,
+  helpers,
+  core,
+  toolkit,
+  config,
+  BI,
+  hd,
+  RPC,
+  Indexer,
+  Cell,
+} from "@ckb-lumos/lumos";
+import pTimeout from "p-timeout";
 import { SerializeRcLockWitnessLock } from "../generated/omni";
 
 const CONFIG = config.createConfig({
@@ -9,27 +23,29 @@ const CONFIG = config.createConfig({
     ...config.predefined.AGGRON4.SCRIPTS,
     // for more about Omni lock, please check https://github.com/XuJiandong/docs-bank/blob/master/omni_lock.md
     OMNI_LOCK: {
-      CODE_HASH: "0x79f90bb5e892d80dd213439eeab551120eb417678824f282b4ffb5f21bad2e1e",
+      CODE_HASH:
+        "0x79f90bb5e892d80dd213439eeab551120eb417678824f282b4ffb5f21bad2e1e",
       HASH_TYPE: "type",
-      TX_HASH: "0x9154df4f7336402114d04495175b37390ce86a4906d2d4001cf02c3e6d97f39c",
+      TX_HASH:
+        "0x9154df4f7336402114d04495175b37390ce86a4906d2d4001cf02c3e6d97f39c",
       INDEX: "0x0",
       DEP_TYPE: "code",
     },
   },
 });
 
-const ALICE_PRIVATE_KEY = "0x96150d7ce108a2dab7c7689d773422fa1a272f85f0ddf4c5a3d807b2b145d3ba";
+const ALICE_PRIVATE_KEY =
+  "0x96150d7ce108a2dab7c7689d773422fa1a272f85f0ddf4c5a3d807b2b145d3ba";
 // const ALICE_ARGS = "0xf1251ee1c665f8771834983dcdb355d9ce1afd51";
 // const ALICE_ADDRESS = "ckt1q3uljza4azfdsrwjzdpea6442yfqadqhv7yzfu5zknlmtusm45hpuq9053a0r4xs9628clzljd2p3vhgvv4nv8sqn5eakw";
 
 // const BOB_PRIVATE_KEY = "0xff23deb2cb863c8c51478a14e51a8ed1b0da7fcefbb5fedfc5b0bbf9ac29f132";
 // const BOB_ARGS = "0x521571da5d51794e3c7ed1d092eef6c652584a5a";
 
-const BOB_ADDRESS = "ckt1q3uljza4azfdsrwjzdpea6442yfqadqhv7yzfu5zknlmtusm45hpuq9tv9dma3hzzt8k7a7ekqpkja4saaf2fecq3l3xmk";
-
+const BOB_ADDRESS =
+  "ckt1q3uljza4azfdsrwjzdpea6442yfqadqhv7yzfu5zknlmtusm45hpuq9tv9dma3hzzt8k7a7ekqpkja4saaf2fecq3l3xmk";
 
 config.initializeConfig(CONFIG);
-
 
 /*
 const capacityOf = async (address: string): Promise<BI> => {
@@ -58,23 +74,29 @@ const getBalance = async (lockArgs: string) => {
     outputDataLenRange: ["0x0", "0x1"],
   });
 
-  let balance = BI.from(0)
+  let balance = BI.from(0);
   for await (const cell of ckbCollector.collect()) {
     balance = balance.add(cell.cell_output.capacity);
   }
   return balance.div(100000000).toString();
-}
+};
 
-const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string, capacity: BI) => {
+const transferCKB = async (
+  senderPrivateKey: HexString,
+  receiverLockArgs: string,
+  capacity: BI
+) => {
   const userConfig = config.createConfig({
     PREFIX: "ckt",
     SCRIPTS: {
       ...config.predefined.AGGRON4.SCRIPTS,
       // for more about Omni lock, please check https://github.com/XuJiandong/docs-bank/blob/master/omni_lock.md
       OMNI_LOCK: {
-        CODE_HASH: "0x79f90bb5e892d80dd213439eeab551120eb417678824f282b4ffb5f21bad2e1e",
+        CODE_HASH:
+          "0x79f90bb5e892d80dd213439eeab551120eb417678824f282b4ffb5f21bad2e1e",
         HASH_TYPE: "type",
-        TX_HASH: "0x9154df4f7336402114d04495175b37390ce86a4906d2d4001cf02c3e6d97f39c",
+        TX_HASH:
+          "0x9154df4f7336402114d04495175b37390ce86a4906d2d4001cf02c3e6d97f39c",
         INDEX: "0x0",
         DEP_TYPE: "code",
       },
@@ -88,11 +110,14 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
 
   const signer = new PrivateKeySigner(senderPrivateKey);
 
-  const signableScript = new Secp256k1Blake160SignableScript(userConfig, signer);
+  const signableScript = new Secp256k1Blake160SignableScript(
+    userConfig,
+    signer
+  );
 
   let txSkeleton = helpers.TransactionSkeleton({ cellProvider: indexer });
-  
-  const pubKey = hd.key.privateToPublic(senderPrivateKey)
+
+  const pubKey = hd.key.privateToPublic(senderPrivateKey);
   const args = hd.key.publicKeyToBlake160(pubKey);
   const lockScript = {
     code_hash: userConfig.SCRIPTS.SECP256K1_BLAKE160.CODE_HASH,
@@ -105,8 +130,8 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
     outputDataLenRange: ["0x0", "0x1"],
   });
 
-  const collectedCells: Cell[] = []
-  let totalInput = BI.from(0)
+  const collectedCells: Cell[] = [];
+  let totalInput = BI.from(0);
   for await (const cell of ckbCollector.collect()) {
     collectedCells.push(cell);
     totalInput = totalInput.add(cell.cell_output.capacity);
@@ -132,8 +157,12 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
     data: "0x",
   };
 
-  txSkeleton = txSkeleton.update("inputs", (inputs) => inputs.push(...collectedCells));
-  txSkeleton = txSkeleton.update("outputs", (outputs) => outputs.push(transferOutput, changeOutput));
+  txSkeleton = txSkeleton.update("inputs", (inputs) =>
+    inputs.push(...collectedCells)
+  );
+  txSkeleton = txSkeleton.update("outputs", (outputs) =>
+    outputs.push(transferOutput, changeOutput)
+  );
   txSkeleton = txSkeleton.update("cellDeps", (cellDeps) =>
     cellDeps.push({
       out_point: {
@@ -144,13 +173,17 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
     })
   );
   const witness = new toolkit.Reader(
-    core.SerializeWitnessArgs(toolkit.normalizers.NormalizeWitnessArgs({
-      lock: `0x${'00'.repeat(65)}`,
-    }))
+    core.SerializeWitnessArgs(
+      toolkit.normalizers.NormalizeWitnessArgs({
+        lock: `0x${"00".repeat(65)}`,
+      })
+    )
   ).serializeJson();
-  txSkeleton = txSkeleton.update("witnesses", (witnesses) => witnesses.push(witness));
+  txSkeleton = txSkeleton.update("witnesses", (witnesses) =>
+    witnesses.push(witness)
+  );
 
-  const signingEntries = signableScript.generateSigningEntries(txSkeleton)
+  const signingEntries = signableScript.generateSigningEntries(txSkeleton);
   console.log("signingEntries", signingEntries);
 
   const message = signingEntries[0].message;
@@ -173,16 +206,21 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
     })
   ).serializeJson();
   console.log("tx is:", tx);
-  
-  console.log("Before transfer, sender balance is:", await getBalance(lockScript.args), "reciver balance is:", await getBalance(receiverLockArgs));
-  
+
+  console.log(
+    "Before transfer, sender balance is:",
+    await getBalance(lockScript.args),
+    "reciver balance is:",
+    await getBalance(receiverLockArgs)
+  );
+
   const txHash = await rpc.send_transaction(tx, "passthrough");
   console.log("The transaction hash is", txHash);
 
   const checkTxCommitted = async () => {
     const txPromise = rpc.get_transaction(txHash);
     const tx = await pTimeout(txPromise, 10000);
-    if (tx?.tx_status?.status === 'committed') {
+    if (tx?.tx_status?.status === "committed") {
       return true;
     }
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -190,8 +228,8 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
   };
 
   // eslint-disable-next-line no-constant-condition
-  while(true){
-    const commited = await checkTxCommitted()
+  while (true) {
+    const commited = await checkTxCommitted();
     if (commited) {
       console.log("The tx is commited!!!");
       break;
@@ -199,11 +237,15 @@ const transferCKB = async (senderPrivateKey: HexString, receiverLockArgs: string
     console.log("Waiting for the tx to be commited...");
   }
 
-  console.log("After transfer, sender balance is:", await getBalance(lockScript.args), "reciver balance is:", await getBalance(receiverLockArgs));
-  
-}
+  console.log(
+    "After transfer, sender balance is:",
+    await getBalance(lockScript.args),
+    "reciver balance is:",
+    await getBalance(receiverLockArgs)
+  );
+};
 
-transferCKB(ALICE_PRIVATE_KEY, BOB_ADDRESS, BI.from(100))
+transferCKB(ALICE_PRIVATE_KEY, BOB_ADDRESS, BI.from(100));
 
 /*
 test("addition", (t) => {

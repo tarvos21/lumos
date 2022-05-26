@@ -1,4 +1,11 @@
-import { HexString, helpers, commons, config, utils, hd, } from "@ckb-lumos/lumos";
+import {
+  HexString,
+  helpers,
+  commons,
+  config,
+  utils,
+  hd,
+} from "@ckb-lumos/lumos";
 
 type SigningEntry = {
   // script: Script;
@@ -14,7 +21,9 @@ type Promisible<T> = T | Promise<T>;
 type Signature = HexString;
 
 interface SignableScript {
-  generateSigningEntries: (tx: helpers.TransactionSkeletonType) => Promisible<SigningEntry[]>;
+  generateSigningEntries: (
+    tx: helpers.TransactionSkeletonType
+  ) => Promisible<SigningEntry[]>;
   sign: (message: HexString) => Promisible<Signature>;
 }
 
@@ -39,20 +48,26 @@ export class Secp256k1Blake160SignableScript implements SignableScript {
   private readonly _signer: Signer;
 
   constructor(userConfig?: config.Config, userSigner?: Signer) {
-    this._config = userConfig || config.predefined.AGGRON4 as config.Config;
+    this._config = userConfig || (config.predefined.AGGRON4 as config.Config);
     this._signer = userSigner || new PrivateKeySigner("");
   }
 
-  generateSigningEntries(txSkeleton: helpers.TransactionSkeletonType): SigningEntry[] {
+  generateSigningEntries(
+    txSkeleton: helpers.TransactionSkeletonType
+  ): SigningEntry[] {
     const hasher = new utils.CKBHasher();
     // locks you want to sign
     const signLock = txSkeleton.inputs.get(0)?.cell_output.lock!;
-    const signingEntries = commons.createP2PKHMessageGroup(txSkeleton, [signLock], {
-      hasher: {
-        update: (message) => hasher.update(message.buffer),
-        digest: () => new Uint8Array(hasher.digestReader().toArrayBuffer()),
-      },
-    });
+    const signingEntries = commons.createP2PKHMessageGroup(
+      txSkeleton,
+      [signLock],
+      {
+        hasher: {
+          update: (message) => hasher.update(message.buffer),
+          digest: () => new Uint8Array(hasher.digestReader().toArrayBuffer()),
+        },
+      }
+    );
 
     /*
     let signingEntries: SigningEntry[] = [];
@@ -105,10 +120,9 @@ export class Secp256k1Blake160SignableScript implements SignableScript {
     return signingEntries;
   }
 
-  async sign(message: string): Promise<HexString>{
+  async sign(message: string): Promise<HexString> {
     return await this._signer.sign(message);
   }
-
 }
 
 /*
