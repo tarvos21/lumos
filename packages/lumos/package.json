@@ -45,7 +45,8 @@
     "@ckb-lumos/hd": "0.17.0-rc10",
     "@ckb-lumos/helpers": "0.17.0-rc10",
     "@ckb-lumos/rpc": "0.17.0-rc10",
-    "@ckb-lumos/toolkit": "0.17.0-rc10"
+    "@ckb-lumos/toolkit": "0.17.0-rc10",
+    "@ckb-lumos/omnilock": "0.17.0-rc10"
   },
   "devDependencies": {
     "buffer": "^6.0.3",

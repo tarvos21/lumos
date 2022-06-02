@@ -19,6 +19,11 @@
     "src"
   ],
   "dependencies": {
+    "@ckb-lumos/base": "0.17.0-rc10",
+    "@ckb-lumos/common-scripts": "0.17.0-rc10",
+    "@ckb-lumos/config-manager": "0.17.0-rc10",
+    "@ckb-lumos/hd": "0.17.0-rc10",
+    "@ckb-lumos/helpers": "0.17.0-rc10",
     "jsbi": "^4.1.0"
   },
   "repository": {

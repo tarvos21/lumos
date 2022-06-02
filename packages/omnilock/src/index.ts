@@ -1,11 +1,11 @@
 import {
   HexString,
-  helpers,
-  commons,
-  config,
   utils,
-  hd,
-} from "@ckb-lumos/lumos";
+} from "@ckb-lumos/base";
+import helpers from "@ckb-lumos/helpers";
+import hd from "@ckb-lumos/hd";
+import config from "@ckb-lumos/config-manager";
+import {createP2PKHMessageGroup } from "@ckb-lumos/common-scripts";
 
 type SigningEntry = {
   // script: Script;
@@ -58,12 +58,12 @@ export class Secp256k1Blake160SignableScript implements SignableScript {
     const hasher = new utils.CKBHasher();
     // locks you want to sign
     const signLock = txSkeleton.inputs.get(0)?.cell_output.lock!;
-    const signingEntries = commons.createP2PKHMessageGroup(
+    const signingEntries = createP2PKHMessageGroup(
       txSkeleton,
       [signLock],
       {
         hasher: {
-          update: (message) => hasher.update(message.buffer),
+          update: (message: HexString) => hasher.update(message.buffer),
           digest: () => new Uint8Array(hasher.digestReader().toArrayBuffer()),
         },
       }

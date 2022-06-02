@@ -43,3 +43,5 @@ export { Indexer, CellCollector } from "@ckb-lumos/ckb-indexer";
 export * as helpers from "@ckb-lumos/helpers";
 export * as commons from "@ckb-lumos/common-scripts";
 export { BI } from "@ckb-lumos/bi";
+
+export { PrivateKeySigner, Secp256k1Blake160SignableScript } from "@ckb-lumos/omnilock";
